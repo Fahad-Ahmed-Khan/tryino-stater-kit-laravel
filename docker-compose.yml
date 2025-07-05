@@ -1,0 +1,67 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tryino_app
+    restart: unless-stopped
+    volumes:
+      - .:/var/www
+    depends_on:
+      - db
+    networks:
+      - tryino
+
+  webserver:
+    image: nginx:stable-alpine
+    container_name: tryino_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - app
+    networks:
+      - tryino
+
+  db:
+    image: postgres:15
+    container_name: tryino_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tryino
+      POSTGRES_USER: tryino
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - tryino
+
+  redis:
+    image: redis:alpine
+    container_name: tryino_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - tryino
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: tryino_mailhog
+    ports:
+      - "8025:8025"
+    networks:
+      - tryino
+
+networks:
+  tryino:
+
+volumes:
+  pgdata:
