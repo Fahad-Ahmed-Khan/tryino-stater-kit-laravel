@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits\API;
+namespace App\Services;
 
 abstract class BaseService {
     protected $repository;
