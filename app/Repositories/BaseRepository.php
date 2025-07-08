@@ -2,43 +2,42 @@
 
 namespace App\Repositories;
 
-use App\Repositories\Contracts\BaseRepositoryInterface;
+use App\Repositories\Interfaces\BaseRepositoryInterface;
+use Illuminate\Database\Eloquent\Model;
 
-/**
- * Class BaseRepository
- * @package App\Repositories
- *
- * This class provides a base implementation for repository pattern.
- * It can be extended by other repositories to inherit common methods.
- */
+class BaseRepository implements BaseRepositoryInterface
+{
+    protected Model $model;
 
-abstract class BaseRepository implements BaseRepositoryInterface {
-    protected $model;
-
-    public function __construct($model) {
+    public function __construct(Model $model)
+    {
         $this->model = $model;
     }
 
-    public function all() {
-        return $this->model::all();
+    public function all()
+    {
+        return $this->model->all();
     }
 
-    public function find($id) {
-        return $this->model::findOrFail($id);
+    public function find($id)
+    {
+        return $this->model->findOrFail($id);
     }
 
-    public function create(array $data) {
-        return $this->model::create($data);
+    public function create(array $data)
+    {
+        return $this->model->create($data);
     }
 
-    public function update($id, array $data) {
+    public function update($id, array $data)
+    {
         $record = $this->find($id);
         $record->update($data);
         return $record;
     }
 
-    public function delete($id) {
-        $record = $this->find($id);
-        return $record->delete();
+    public function delete($id)
+    {
+        return $this->model->destroy($id);
     }
 }
